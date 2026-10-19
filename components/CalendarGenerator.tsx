@@ -36,9 +36,16 @@ export default function CalendarGenerator() {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("maganghub_calendar_config_v2");
+      const saved = localStorage.getItem("maganghub_calendar_config_v3");
       if (saved) {
         setConfig(JSON.parse(saved));
+      } else {
+        // First load with v3: apply 20/09/2026 - 20/03/2027
+        setConfig((prev) => ({
+          ...prev,
+          startDate: "2026-09-20",
+          endDate: "2027-03-20",
+        }));
       }
     } catch {
       // ignore
@@ -52,7 +59,7 @@ export default function CalendarGenerator() {
     setConfig((prev) => {
       const updated = { ...prev, ...newVal };
       try {
-        localStorage.setItem("maganghub_calendar_config_v2", JSON.stringify(updated));
+        localStorage.setItem("maganghub_calendar_config_v3", JSON.stringify(updated));
       } catch {
         // ignore
       }
