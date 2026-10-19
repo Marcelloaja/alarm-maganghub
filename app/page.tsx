@@ -25,32 +25,32 @@ export default function Home() {
         {/* Top Hero Section */}
         <div className="mb-6 rounded-2xl border border-zinc-200 bg-white p-4.5 sm:p-8 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50/80 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-medium text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-300">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50/80 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-medium text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300">
               <BellRing className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0" />
-              <span>Pengingat Google Calendar untuk Peserta MagangHub</span>
+              <span>Pengingat Presensi Balai Bahasa Jatim & Monev Kemnaker</span>
             </div>
 
             <h1 className="mt-3 text-lg font-bold tracking-tight text-zinc-900 sm:text-3xl lg:text-4xl dark:text-zinc-50 leading-snug">
-              Jangan Sampai Lupa Isi Logbook & Absen Pulang MagangHub Kemnaker
+              Jangan Sampai Lupa Absen Balai Bahasa Jatim & Logbook MagangHub
             </h1>
 
             <p className="mt-2 text-xs text-zinc-600 sm:text-base dark:text-zinc-400 leading-relaxed">
-              Pasang alarm pengingat berulang langsung ke <strong>Google Calendar HP Anda</strong>. Anda akan menerima notifikasi suara dan pop-up di HP setiap sore sebelum jam pulang kantor (pukul 16:00), lengkap dengan link langsung ke portal Monev dan format draf catatan harian.
+              Pasang alarm pengingat berulang langsung ke <strong>Google Calendar HP Anda</strong>. Anda akan menerima notifikasi suara dan pop-up di HP setiap sore sebelum jam pulang kantor (pukul 16:00), lengkap dengan link ke <strong>Formulir Absensi Balai Bahasa Jatim</strong>, link <strong>Monev Kemnaker</strong>, dan draf catatan logbook.
             </p>
 
             {/* Feature Pills */}
             <div className="mt-4 flex flex-wrap gap-2 text-[11px] sm:text-xs text-zinc-700 dark:text-zinc-300">
-              <span className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1 dark:border-zinc-700 dark:bg-zinc-800">
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/50 dark:text-emerald-300">
                 <CheckCircle className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-                Langsung masuk kalender HP
+                1. GForm Absen Balai Bahasa Jatim
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1 text-blue-800 dark:border-blue-900/50 dark:bg-blue-950/50 dark:text-blue-300">
+                <CheckCircle className="h-3.5 w-3.5 text-blue-600 shrink-0" />
+                2. Logbook Monev Kemnaker
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1 dark:border-zinc-700 dark:bg-zinc-800">
-                <CheckCircle className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-                Notifikasi 15 menit sebelum cutoff
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1 dark:border-zinc-700 dark:bg-zinc-800">
-                <CheckCircle className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-                Tanpa perlu buka website terus-menerus
+                <CheckCircle className="h-3.5 w-3.5 text-zinc-600 shrink-0" />
+                Alarm HP Jam 15:45 & 16:00
               </span>
             </div>
           </div>

@@ -1,52 +1,79 @@
 export interface CalendarConfig {
   title: string;
-  reminderTime: string; // e.g. "16:30"
+  reminderTime: string; // e.g. "16:00"
   durationMinutes: number; // e.g. 30
-  startDate: string; // e.g. "2026-10-20"
-  endDate: string; // e.g. "2027-04-20"
+  startDate: string; // e.g. "2026-10-15"
+  endDate: string; // e.g. "2027-04-15"
   workDays: ('MO' | 'TU' | 'WE' | 'TH' | 'FR' | 'SA')[];
   includeSaturday: boolean;
   alertLeadMinutes: number; // e.g. 15
-  secondAlertMinutes?: number; // e.g. 0 (at event start)
+  secondAlertMinutes?: number; // e.g. 0
+  includeBalaiBahasa: boolean;
   customNotes?: string;
 }
 
+export const MONEV_URL = "https://monev.maganghub.kemnaker.go.id/";
+export const BALAI_BAHASA_FORM_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSecc8VWurCDuqarEYn0IKoM4iQAWH5P_uIJm7Uai0PqzE4Uhg/viewform";
+
 export const DEFAULT_CONFIG: CalendarConfig = {
-  title: "📝 Isi Logbook Harian MagangHub Kemnaker",
+  title: "📝 Absen & Logbook Harian (Balai Bahasa & Kemnaker)",
   reminderTime: "16:00",
   durationMinutes: 30,
   startDate: new Date().toISOString().split("T")[0],
-  endDate: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString().split("T")[0], // 6 months default
+  endDate: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
   workDays: ['MO', 'TU', 'WE', 'TH', 'FR'],
   includeSaturday: false,
   alertLeadMinutes: 15,
   secondAlertMinutes: 0,
-  customNotes: "Jangan lupa isi aktivitas harian, pencapaian tugas, dan presensi keluar di portal Monev.",
+  includeBalaiBahasa: true,
+  customNotes: "Segera isi kedua link sebelum beres-beres pulang jam 4 sore.",
 };
 
-export const MONEV_URL = "https://monev.maganghub.kemnaker.go.id/";
+export function buildEventDescription(notes?: string, includeBalaiBahasa: boolean = true): string {
+  const lines: string[] = [
+    "🔔 PENGINGAT HARIAN MAGANG (2 ABSENSI WAJIB)",
+    "=========================================",
+    "⚠️ Jangan lupa ada 2 presensi yang wajib diisi sore ini sebelum pulang:",
+    "",
+  ];
 
-export function buildEventDescription(notes?: string): string {
-  return [
-    "🔔 PENGINGAT HARIAN MAGANGHUB KEMNAKER",
-    "-----------------------------------------",
-    "Waktunya mengisi logbook dan presensi harian agar laporan magang Anda tetap aman dan disetujui pembimbing.",
-    "",
-    `🔗 Link Portal Monev: ${MONEV_URL}`,
-    "",
-    "📋 Panduan Format Pengisian:",
-    "1. Rincian Kegiatan: Apa yang dikerjakan hari ini?",
-    "2. Hasil / Output: Dokumen/fitur/data yang diselesaikan.",
-    "3. Kendala & Solusi: Masalah yang dihadapi (jika ada).",
-    "",
-    notes ? `📌 Catatan Pribadi:\n${notes}\n` : "",
-    "-----------------------------------------",
-    "Dibuat via Pengingat MagangHub (Kemnaker) - Siap Vercel",
-  ].join("\n");
+  if (includeBalaiBahasa) {
+    lines.push(
+      "1️⃣ ABSENSI BALAI BAHASA JATIM (Internal Wajib):",
+      `🔗 Link GForm: ${BALAI_BAHASA_FORM_URL}`,
+      "📌 Aturan Balai Bahasa Jatim:",
+      "• Hanya 1 KALI kesempatan pengisian.",
+      "• Jika ada kendala (ban bocor, darurat, dll), konfirmasi di Grup Besar ke Bu Retno & Bu Ina.",
+      "• Simpan screenshot bukti submit jika dibutuhkan verifikasi.",
+      ""
+    );
+  }
+
+  lines.push(
+    "2️⃣ LOGBOOK & PRESENSI MONEV KEMNAKER (Pusat Wajib):",
+    `🔗 Link Portal: ${MONEV_URL}`,
+    "📌 Format Catatan Logbook:",
+    "• Kegiatan: Aktivitas pekerjaan hari ini",
+    "• Output: Hasil fisik/digital/dokumen yang selesai",
+    "• Kendala: Masalah & solusi tindak lanjut",
+    "• Jangan lupa klik tombol presensi keluar/pulang",
+    ""
+  );
+
+  if (notes) {
+    lines.push(`📌 Catatan Tambahan:\n${notes}\n`);
+  }
+
+  lines.push(
+    "=========================================",
+    "MonevHub Companion - Balai Bahasa Jatim x Kemnaker"
+  );
+
+  return lines.join("\n");
 }
 
 function formatGoogleDate(dateStr: string, timeStr: string): string {
-  // Returns YYYYMMDDTHHMMSS
   const [year, month, day] = dateStr.split("-");
   const [hours, minutes] = timeStr.split(":");
   return `${year}${month}${day}T${hours}${minutes}00`;
@@ -71,18 +98,19 @@ export function generateGoogleCalendarUrl(config: CalendarConfig): string {
     ? ['MO', 'TU', 'WE', 'TH', 'FR', 'SA']
     : ['MO', 'TU', 'WE', 'TH', 'FR'];
 
-  // Until date in UTC representation: YYYYMMDD
   const untilFormatted = config.endDate.replace(/-/g, "") + "T235959Z";
   const rrule = `RRULE:FREQ=WEEKLY;BYDAY=${activeDays.join(",")};UNTIL=${untilFormatted}`;
 
-  const description = buildEventDescription(config.customNotes);
+  const description = buildEventDescription(config.customNotes, config.includeBalaiBahasa);
 
   const params = new URLSearchParams({
     action: "TEMPLATE",
     text: config.title,
     dates: `${startDt}/${endDt}`,
     details: description,
-    location: MONEV_URL,
+    location: config.includeBalaiBahasa
+      ? `${BALAI_BAHASA_FORM_URL} | ${MONEV_URL}`
+      : MONEV_URL,
     recur: rrule,
   });
 
@@ -101,7 +129,7 @@ export function generateIcsContent(config: CalendarConfig): string {
   const untilFormatted = config.endDate.replace(/-/g, "") + "T235959Z";
   const rrule = `FREQ=WEEKLY;BYDAY=${activeDays.join(",")};UNTIL=${untilFormatted}`;
 
-  const descriptionEscaped = buildEventDescription(config.customNotes)
+  const descriptionEscaped = buildEventDescription(config.customNotes, config.includeBalaiBahasa)
     .replace(/\\/g, "\\\\")
     .replace(/\n/g, "\\n")
     .replace(/,/g, "\\,")
@@ -112,13 +140,18 @@ export function generateIcsContent(config: CalendarConfig): string {
     .replace(/,/g, "\\,")
     .replace(/;/g, "\\;");
 
+  const locationEscaped = (config.includeBalaiBahasa
+    ? `${BALAI_BAHASA_FORM_URL} | ${MONEV_URL}`
+    : MONEV_URL
+  ).replace(/,/g, "\\,");
+
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//MagangHub Reminder System//ID",
+    "PRODID:-//MagangHub Balai Bahasa Jatim//ID",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
-    "X-WR-CALNAME:Logbook MagangHub Kemnaker",
+    "X-WR-CALNAME:Absen Balai Bahasa Jatim & Kemnaker",
     "X-WR-TIMEZONE:Asia/Jakarta",
     "BEGIN:VEVENT",
     `UID:maganghub-alarm-${Date.now()}@maganghub-reminder`,
@@ -128,28 +161,26 @@ export function generateIcsContent(config: CalendarConfig): string {
     `RRULE:${rrule}`,
     `SUMMARY:${summaryEscaped}`,
     `DESCRIPTION:${descriptionEscaped}`,
-    `LOCATION:${MONEV_URL}`,
+    `LOCATION:${locationEscaped}`,
     "STATUS:CONFIRMED",
   ];
 
-  // Lead alert (e.g. 15 minutes before)
   if (config.alertLeadMinutes > 0) {
     lines.push(
       "BEGIN:VALARM",
       `TRIGGER:-PT${config.alertLeadMinutes}M`,
       "ACTION:DISPLAY",
-      "DESCRIPTION:Pengingat Logbook MagangHub sebentar lagi!",
+      "DESCRIPTION:Waktunya isi Absen Balai Bahasa & Logbook Kemnaker!",
       "END:VALARM"
     );
   }
 
-  // Exact time alert
   if (config.secondAlertMinutes !== undefined) {
     lines.push(
       "BEGIN:VALARM",
       "TRIGGER:-PT0M",
       "ACTION:DISPLAY",
-      "DESCRIPTION:Waktunya mengisi logbook MagangHub sekarang!",
+      "DESCRIPTION:Jam 4 Pulang! Jangan lupa submit kedua presensi sekarang.",
       "END:VALARM"
     );
   }
